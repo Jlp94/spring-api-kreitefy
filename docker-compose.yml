@@ -1,0 +1,77 @@
+# =====================================================================
+#  Kreitefy — Stack de producción
+#  Servicios:
+#    · db       → PostgreSQL 15
+#    · adminer  → Panel web de administración de BD (puerto 8081)
+#    · api      → Spring Boot API (puerto 8080)
+#
+#  Variables de entorno: ../.env (carpeta raíz del proyecto)
+# =====================================================================
+
+services:
+
+  # ── Base de datos ────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: kreitefy-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kreitefy
+      POSTGRES_USER: kreitefy
+      POSTGRES_PASSWORD: kreitefy1234
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kreitefy-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kreitefy -d kreitefy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ── Adminer (gestor web de BD) ────────────────────────────────────────
+  adminer:
+    image: adminer:4-standalone
+    container_name: kreitefy-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: dracula
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - kreitefy-net
+
+  # ── API Spring Boot ───────────────────────────────────────────────────
+  api:
+    image: kreitefy-api:latest    # imagen ya construida con: docker build -t kreitefy-api:latest .
+    container_name: kreitefy-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ../.env                   # JWT_SECRET y OAuth2 desde la raíz del proyecto
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/kreitefy
+      SPRING_DATASOURCE_USERNAME: kreitefy
+      SPRING_DATASOURCE_PASSWORD: kreitefy1234
+    networks:
+      - kreitefy-net
+
+# ── Volúmenes ─────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    name: kreitefy-postgres-data
+
+# ── Red interna ───────────────────────────────────────────────────────
+networks:
+  kreitefy-net:
+    name: kreitefy-network
