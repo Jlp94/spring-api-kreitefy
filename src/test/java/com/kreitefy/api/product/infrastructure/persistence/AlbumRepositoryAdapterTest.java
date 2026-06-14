@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AlbumRepositoryPortImplTest {
+class AlbumRepositoryAdapterTest {
 
     @Mock
     private AlbumJpaRepository albumJpaRepository;

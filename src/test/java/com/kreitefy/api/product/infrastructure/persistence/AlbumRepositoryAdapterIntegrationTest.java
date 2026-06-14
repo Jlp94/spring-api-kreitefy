@@ -21,8 +21,8 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({AlbumRepositoryAdapter.class, AlbumRepositoryPortImplIntegrationTest.TestConfig.class})
-class AlbumRepositoryPortImplIntegrationTest {
+@Import({AlbumRepositoryAdapter.class, AlbumRepositoryAdapterIntegrationTest.TestConfig.class})
+class AlbumRepositoryAdapterIntegrationTest {
 
     @TestConfiguration
     static class TestConfig {

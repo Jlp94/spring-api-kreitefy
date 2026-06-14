@@ -34,5 +34,5 @@ build/
 .vscode/
 
 # Base de datos local (H2)
-api/data/
+/data/
 *.db

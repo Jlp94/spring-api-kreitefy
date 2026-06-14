@@ -1,6 +1,7 @@
 package com.kreitefy.api.product.infrastructure.persistence.jpa;
 
 import com.kreitefy.api.product.infrastructure.persistence.entity.SongEntity;
+import com.kreitefy.api.product.infrastructure.persistence.querys.SongRepositoryCustom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -8,9 +9,8 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-
 public interface SongJpaRepository
-        extends JpaRepository<SongEntity, Long>, JpaSpecificationExecutor<SongEntity> {
+        extends JpaRepository<SongEntity, Long>, JpaSpecificationExecutor<SongEntity>, SongRepositoryCustom {
 
     @EntityGraph(attributePaths = {"album", "album.artista", "estiloMusical"})
     Page<SongEntity> findAll(Specification<SongEntity> spec, Pageable pageable);

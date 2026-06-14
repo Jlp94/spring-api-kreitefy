@@ -89,17 +89,6 @@ public class SongRepositoryAdapter implements SongRepositoryPort, HomeCatalogPor
 
     @Override
     public Page<Song> findByCriteria(SongCriteria criteria, Optional<PageInfo> pageInfo) {
-        LikeSpecification<SongEntity> byTitulo   = new LikeSpecification<>("titulo", criteria.titulo());
-        LikeSpecification<SongEntity> byAlbum    = new LikeSpecification<>("album.nombre", criteria.nombreAlbum());
-        LikeSpecification<SongEntity> byArtista  = new LikeSpecification<>("album.artista.nombre", criteria.nombreArtista());
-        EqualSpecification<SongEntity, String> byEstilo = new EqualSpecification<>("estiloMusical.estilo", criteria.estilo());
-
-        Specification<SongEntity> spec = Specification.unrestricted();
-
-        spec = spec.and(byTitulo)
-                .and(byAlbum)
-                .and(byArtista)
-                .and(byEstilo);
 
         Sort sort = Sort.by("id").ascending();
         Pageable pageable = pageInfo
@@ -109,7 +98,7 @@ public class SongRepositoryAdapter implements SongRepositoryPort, HomeCatalogPor
                 })
                 .orElse(PageRequest.of(0, 20, sort));
 
-        Page<SongEntity> entityPage = songJpaRepository.findAll(spec, pageable);
+        Page<SongEntity> entityPage = songJpaRepository.findByCriteriaQueryDsl( criteria,pageable);
 
         return entityPage.map(songMapper::entityToDomain);
     }

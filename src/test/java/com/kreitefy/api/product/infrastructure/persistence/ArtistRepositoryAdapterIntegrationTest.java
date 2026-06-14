@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import({ ArtistRepositoryAdapter.class, ArtistaRepositoryPortImplIntegrationTest.TestConfig.class })
-class ArtistaRepositoryPortImplIntegrationTest {
+@Import({ ArtistRepositoryAdapter.class, ArtistRepositoryAdapterIntegrationTest.TestConfig.class })
+class ArtistRepositoryAdapterIntegrationTest {
 
     @TestConfiguration
     static class TestConfig {

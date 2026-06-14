@@ -38,7 +38,7 @@
 | Módulo       | Responsabilidad                                         |
 |--------------|---------------------------------------------------------|
 | `product`    | Catálogo de **canciones**, **álbumes**, **artistas** y **estilos musicales** |
-| `community`  | **Canciones favoritas** por usuario                      |
+| `community`  | **Canciones favoritas**, **valoraciones** e **historial de reproducciones** por usuario |
 | `users`      | **Autenticación** (JWT + OAuth2 Google/GitHub) y gestión de usuarios |
 | `shared`     | Contratos genéricos, excepciones de dominio y utilidades transversales |
 
@@ -346,7 +346,7 @@ Request → JwtAuthenticationFilter → SecurityFilterChain → Controller
 - **Librería**: `io.jsonwebtoken` (JJWT 0.12.6), la implementación más moderna de JWT para Java.
 - **Flujo**: el cliente envía credenciales → `AuthService` las valida → `JwtService` genera un `accessToken` + `refreshToken`.
 - **Stateless**: `SessionCreationPolicy.STATELESS` — el servidor no guarda estado de sesión.
-- **`@Version` (Optimistic Locking)**: los recursos de usuario incluyen un campo `version` que protege contra actualizaciones concurrentes. Si dos usuarios editan el mismo recurso simultáneamente, el segundo recibirá un error 409 Conflict.
+- **`@Version` (Optimistic Locking)**: Los recursos críticos del catálogo (canciones y álbumes) incluyen un campo `version` que protege contra modificaciones concurrentes conflictivas, lanzando un error 409 Conflict en caso de colisión.
 
 ### OAuth2 Social Login
 
@@ -505,7 +505,7 @@ src/
 │   │           ├── dtos/                 ← DTOs de request y response
 │   │           └── *RestController.java  ← Controladores REST
 │   │
-│   ├── community/                        ← Módulo: favoritos
+│   ├── community/                        ← Módulo: interacciones (favoritos, valoraciones, historial)
 │   │   └── ... (misma estructura hexagonal)
 │   │
 │   ├── users/                            ← Módulo: auth y usuarios
@@ -550,8 +550,10 @@ src/
 
 ## 📐 Decisiones de diseño destacadas
 
-### QueryDSL para consultas dinámicas
-En lugar de generar múltiples métodos `findByXAndY` en los repositorios JPA, se usa **QueryDSL** con el procesador APT para generar clases Q-type (`QCancionEntity`, `QAlbumEntity`…) que permiten construir predicados tipo-seguros en runtime, equivalentes a consultas SQL dinámicas pero verificadas en compile-time.
+### QueryDSL para consultas dinámicas y optimización N+1
+En lugar de generar múltiples métodos `findByXAndY` en los repositorios JPA, se usa **QueryDSL** con el procesador APT para generar clases Q-type (`QSongEntity`, `QAlbumEntity`…). Esto permite construir predicados dinámicos y tipo-seguros en tiempo de compilación.
+
+Además, se ha optimizado la carga de relaciones (`album`, `artista`, `estiloMusical`) mediante el uso explícito de `fetchJoin()`, evitando por completo el **problema de las consultas N+1** en la búsqueda de canciones del catálogo.
 
 ### Java Records para el dominio
 Las entidades de dominio son Java **Records** (inmutables por diseño), lo que refuerza la integridad del dominio y hace imposible modificar el estado de un objeto de dominio una vez creado, forzando a pasar por los servicios para cualquier cambio.

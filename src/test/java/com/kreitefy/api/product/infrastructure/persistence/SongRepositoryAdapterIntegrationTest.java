@@ -2,7 +2,6 @@ package com.kreitefy.api.product.infrastructure.persistence;
 
 import com.kreitefy.api.product.domain.models.Song;
 import com.kreitefy.api.product.domain.models.Style;
-import com.kreitefy.api.product.infrastructure.mappers.SongMapper;
 import com.kreitefy.api.product.infrastructure.persistence.adapters.SongRepositoryAdapter;
 import com.kreitefy.api.product.domain.models.Album;
 import com.kreitefy.api.product.infrastructure.persistence.entity.AlbumEntity;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
         com.kreitefy.api.product.infrastructure.mappers.AlbumMapperImpl.class,
         com.kreitefy.api.product.infrastructure.mappers.StyleMapperImpl.class
 })
-class CancionRepositoryPortImplIntegrationTest {
+class SongRepositoryAdapterIntegrationTest {
 
     @Autowired
     private SongRepositoryAdapter cancionRepository;

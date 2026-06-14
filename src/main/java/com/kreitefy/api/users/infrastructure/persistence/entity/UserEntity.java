@@ -27,9 +27,6 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private RolType rol;
 
-    @Version
-    private Integer version;
-
     public UserEntity() {}
 
     public String getUsername() {
@@ -81,11 +78,4 @@ public class UserEntity {
     }
 
 
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
 }
